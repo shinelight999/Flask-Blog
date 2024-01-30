@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block pageTitle %}Flask Blog{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to the Flask Blog!</h1>
+    {% if 'user_id' in session %}
+        <h2>Create a new post</h2>
+        <form method="post" action="{{ url_for('create_post') }}">
+            {{ form.csrf_token }}
+            <label for="header">Header:</label>
+            <input type="text" name="header" maxlength="100" required>
+
+            <label for="content">Content:</label>
+            <textarea name="content" maxlength="1000" required></textarea>
+
+            <button type="submit">Create Post</button>
+        </form>
+    {% endif %}
+    <h2>Recent Posts</h2>
+    {% for post in posts %}
+        <div class="post">
+            <h3>{{ post.header }}</h3>
+            <p>{{ post.content }}</p>
+            <p>Posted by {{ post.user.username }} on {{ post.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+            {% if 'user_id' in session and post.user_id == session['user_id'] %}     
+                <form method="post" action="{{ url_for('delete_post', post_id=post.id) }}">
+                    {{ form.csrf_token }}
+                    <button type="submit">Delete Post</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
